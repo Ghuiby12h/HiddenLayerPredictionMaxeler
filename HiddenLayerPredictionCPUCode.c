@@ -24,7 +24,9 @@ int check(float * outVector, float * expectedVector)
 	return status;
 }
 
-void HiddenLayerPredictionCPU(float weights[HiddenLayerPrediction_outputSize * HiddenLayerPrediction_vectorSize], float inVector[HiddenLayerPrediction_streamSize * HiddenLayerPrediction_vectorSize], float outVector[HiddenLayerPrediction_streamSize * HiddenLayerPrediction_outputSize])
+void HiddenLayerPredictionCPU(	float weights[HiddenLayerPrediction_outputSize * HiddenLayerPrediction_vectorSize], 
+								float inVector[HiddenLayerPrediction_streamSize * HiddenLayerPrediction_vectorSize], 
+								float outVector[HiddenLayerPrediction_streamSize * HiddenLayerPrediction_outputSize])
 {
     for (int i = 0; i < HiddenLayerPrediction_streamSize * HiddenLayerPrediction_outputSize; i++){
         outVector[i] = 0;
@@ -33,7 +35,10 @@ void HiddenLayerPredictionCPU(float weights[HiddenLayerPrediction_outputSize * H
     for (int k = 0; k < HiddenLayerPrediction_streamSize; k++){
         for (int i = 0; i < HiddenLayerPrediction_outputSize; i++) {
     	    for (int j = 0; j < HiddenLayerPrediction_vectorSize; j++){
-    	        outVector[k * HiddenLayerPrediction_outputSize + i] = outVector[k * HiddenLayerPrediction_outputSize + i] + weights[i * HiddenLayerPrediction_vectorSize + j] * inVector[k * HiddenLayerPrediction_vectorSize + j];
+    	        outVector[k * HiddenLayerPrediction_outputSize + i] 
+					= outVector[k * HiddenLayerPrediction_outputSize + i] 
+					+ weights[i * HiddenLayerPrediction_vectorSize + j] 
+					* inVector[k * HiddenLayerPrediction_vectorSize + j];
     	    }
 	    
     	    //Relu activation
