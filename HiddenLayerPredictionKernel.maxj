@@ -1,14 +1,9 @@
 /**
- * Document: MaxCompiler Tutorial (maxcompiler-tutorial.pdf)
- * Chapter: 6
- * Example: 3
- * Summary:
- *        Kernel that doubles values in a vector.
- */
-package vectors;
-
-// import java.util.List;
-// import java.util.ArrayList;
+ * MaxFile name: HiddenLayerPredictionKernel
+ * Based on Vectors example from simulation IDE
+*/
+h
+package hiddenLayerPrediction;
 
 import com.maxeler.maxcompiler.v2.kernelcompiler.Kernel;
 import com.maxeler.maxcompiler.v2.kernelcompiler.KernelParameters;
@@ -17,9 +12,9 @@ import com.maxeler.maxcompiler.v2.kernelcompiler.types.base.DFEType;
 import com.maxeler.maxcompiler.v2.kernelcompiler.types.composite.DFEVector;
 import com.maxeler.maxcompiler.v2.kernelcompiler.types.composite.DFEVectorType;
 
-class VectorsKernel extends Kernel {
+class HiddenLayerPredictionKernel extends Kernel {
 
-	VectorsKernel(KernelParameters parameters, int vectorSize, float weights[]) {
+	HiddenLayerPredictionKernel(KernelParameters parameters, int vectorSize, float weights[]) {
 		super(parameters);
 		
 		DFEType type = dfeFloat(8,24);
@@ -34,22 +29,11 @@ class VectorsKernel extends Kernel {
 
 		// Input
 		DFEVector<DFEVar> inVector = io.input("inVector", inputVectorType);
-		
-		debug.simPrintf("In: ");
-		for (DFEVar e : inVector){
-            debug.simPrintf("%f  ",e);
-        }
-        debug.simPrintf("\n");
-        
-        debug.simPrintf("Weights: ");
-		for (float e : weights){
-            debug.simPrintf("%f  ",e);
-        }
-        debug.simPrintf("\n");
             
+        // Setting up output
         DFEVector<DFEVar> outVector = outputVectorType.newInstance(this); 
-        
-        debug.simPrintf("Count: ");
+
+        // Main loop matrix multiplication
         for (int i = 0; i< outputSize; i++){
             DFEVar count = constant.var(type, 0);
             for (int j = 0; j < vectorSize; j++){
@@ -58,18 +42,7 @@ class VectorsKernel extends Kernel {
             
             //Relu Activation
             outVector[i] <== count > 0 ? count : 0;
-            debug.simPrintf("%f  ",count);
         }
-        debug.simPrintf("\n");
-        // DFEVector<DFEVar> outVector = DFEVectorType.newInstance(count);
-        
-        debug.simPrintf("Out: ");
-		for (DFEVar e : inVector){
-            debug.simPrintf("%f  ",e);
-        }
-        debug.simPrintf("\n");
-        
-        debug.simPrintf("\n");
         
 		//Output
 		io.output("outVector", outVector, outputVectorType);

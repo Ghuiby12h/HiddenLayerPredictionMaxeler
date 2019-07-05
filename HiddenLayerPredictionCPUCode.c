@@ -1,11 +1,7 @@
 /**
- * Document: MaxCompiler Tutorial (maxcompiler-tutorial.pdf)
- * Chapter: 6      Example: 3      Name: Vectors
- * MaxFile name: Vectors
- * Summary:
- *    Streams a vector of integers to the dataflow engine and confirms that the
- *    returned stream contains the integers values doubled.
- */
+ * MaxFile name: HiddenLayerPredictionCPUCode
+ * Based on Vectors example from simulation IDE
+*/
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,63 +12,53 @@
 
 int check(float * outVector, float * expectedVector)
 {
-	int status = 1;
-	for (int i = 0; i < Vectors_streamSize * Vectors_outputSize; i++) {
-	    //Check outputs
-	    if (outVector[i] - expectedVector[i] > 0.0000001 || outVector[i] - expectedVector[i] < 0.0000001)
-		    fprintf(stderr, "outVector[%f] != expectedVector[%f]\n",
+	int status = 0;
+	for (int i = 0; i < HiddenLayerPrediction_streamSize * HiddenLayerPrediction_outputSize; i++) {
+	    fprintf(stderr, "outVector[%f] || expectedVector[%f]\n",
 				    outVector[i], expectedVector[i]);
-			status = 0;
+	    if (outVector[i] != expectedVector[i]){
+		    fprintf(stderr, "Error: Output and Expected value do not match!");
+			status = 1;
+	    }
 	}
 	return status;
 }
 
-void VectorsCPU(float weights[Vectors_outputSize * Vectors_vectorSize], float inVector[Vectors_streamSize * Vectors_vectorSize], float outVector[Vectors_streamSize * Vectors_outputSize])
+void HiddenLayerPredictionCPU(float weights[HiddenLayerPrediction_outputSize * HiddenLayerPrediction_vectorSize], float inVector[HiddenLayerPrediction_streamSize * HiddenLayerPrediction_vectorSize], float outVector[HiddenLayerPrediction_streamSize * HiddenLayerPrediction_outputSize])
 {
-    for (int i = 0; i < Vectors_streamSize * Vectors_outputSize; i++){
+    for (int i = 0; i < HiddenLayerPrediction_streamSize * HiddenLayerPrediction_outputSize; i++){
         outVector[i] = 0;
     }
     
-    for (int k = 0; k < Vectors_streamSize; k++){
-        for (int i = 0; i < Vectors_outputSize; i++) {
-    	    for (int j = 0; j < Vectors_vectorSize; j++){
-    	        outVector[k * Vectors_outputSize + i] = outVector[k * Vectors_outputSize + i] + weights[i * Vectors_vectorSize + j] * inVector[k * Vectors_vectorSize + j];
+    for (int k = 0; k < HiddenLayerPrediction_streamSize; k++){
+        for (int i = 0; i < HiddenLayerPrediction_outputSize; i++) {
+    	    for (int j = 0; j < HiddenLayerPrediction_vectorSize; j++){
+    	        outVector[k * HiddenLayerPrediction_outputSize + i] = outVector[k * HiddenLayerPrediction_outputSize + i] + weights[i * HiddenLayerPrediction_vectorSize + j] * inVector[k * HiddenLayerPrediction_vectorSize + j];
     	    }
 	    
     	    //Relu activation
-    	    if (outVector[k * Vectors_outputSize + i] < 0){
-    	        outVector[k * Vectors_outputSize + i] = (float) 0;
+    	    if (outVector[k * HiddenLayerPrediction_outputSize + i] < 0){
+    	        outVector[k * HiddenLayerPrediction_outputSize + i] = (float) 0;
     	    }
 	    }
     }
 
 }
 
-// float * getWeights(int outputSize, int vectorSize)
-// {
-//     float weights[outputSize][vectorSize];
-//     for (int i = 0; i< outputSize; i++){
-//         for (int j = 0; j< vectorSize; j++){
-//             weights[i][j] = (float) 0;
-//         }
-//     }
-//     return weights;
-// }
-
 int main()
 {
-	const int vectorSize = Vectors_vectorSize;
-	const int numberOutputs = Vectors_outputSize;
+	const int vectorSize = HiddenLayerPrediction_vectorSize;
+	const int numberOutputs = HiddenLayerPrediction_outputSize;
 	
-	float inVector[Vectors_streamSize * vectorSize];
+	float inVector[HiddenLayerPrediction_streamSize * vectorSize];
 	
-	float outVector[Vectors_streamSize * Vectors_outputSize];
-	float expectedVector[Vectors_streamSize * Vectors_outputSize];
+	float outVector[HiddenLayerPrediction_streamSize * HiddenLayerPrediction_outputSize];
+	float expectedVector[HiddenLayerPrediction_streamSize * HiddenLayerPrediction_outputSize];
 	
-	float weights[Vectors_outputSize * Vectors_vectorSize];
+	float weights[HiddenLayerPrediction_outputSize * HiddenLayerPrediction_vectorSize];
 	
 
-	for (int i = 0; i < Vectors_streamSize; i++) {
+	for (int i = 0; i < HiddenLayerPrediction_streamSize; i++) {
 	    for (int j = 0; j < vectorSize; j++){
 	        inVector[i * vectorSize + j] = (i * vectorSize + j) /100.0;
 	    }
@@ -84,10 +70,10 @@ int main()
 	    }
 	}
 
-	VectorsCPU(weights, inVector, outVector);
+	HiddenLayerPredictionCPU(weights, inVector, outVector);
 
 	printf("Running DFE.\n");
-	Vectors(Vectors_streamSize, inVector, expectedVector, weights);
+	HiddenLayerPrediction(HiddenLayerPrediction_streamSize, inVector, expectedVector, weights);
 
 	int status = check(outVector, expectedVector);
 	if (status)
